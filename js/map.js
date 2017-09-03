@@ -11,7 +11,7 @@ var ads = [];
 var variantsOfTitle = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный ' +
 'прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый ' +
 'негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var variantsOfAddress = '{{location.x}}, {{location.y}}'; // Вот тут, наверное, не так;)
+
 var variantsOfPriceMin = 1000;
 var variantsOfPriceMax = 1000000;
 var variantsOfType = ['flat', 'house', 'bungalo'];
@@ -19,12 +19,12 @@ var variantOfRoomsMin = 1;
 var variantOfRoomsMax = 5;
 var variantsOfGuestsMin = 1;
 var variantsOfGuestsMax = 10;
-var variantsOfCheckin = ['12:00', '13:00', '14:00'];
-var variantsOfCheckout = ['12:00', '13:00', '14:00'];
+var variantsOfCheckinCheckout = ['12:00', '13:00', '14:00'];
 var variantsOfLocationXMin = 300;
 var variantsOfLocationXMax = 900;
 var variantsOfLocationYMin = 100;
 var variantsOfLocationYMax = 500;
+var variantsOfFeature = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
 // Смещения для нахождения кончика метки
 var mapMarkerXOffset = 28; // 56 - ширина, делим на два 28. Но получается кончик смещается на 1рх - это номр?
@@ -40,6 +40,12 @@ var chooseRandomArrElement = function (arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 };
 
+// Функция урезания массива
+var generateFeatures = function (arr) {
+  return arr.slice(0, randomIntegerMinToMax(0, arr.length));
+};
+
+
 // Создаем массив случайных объявлений
 for (var i = 0; i < adsQuantity; i++) {
   ads[i] = {
@@ -48,14 +54,14 @@ for (var i = 0; i < adsQuantity; i++) {
     },
     offer: {
       title: variantsOfTitle[i],
-      address: variantsOfAddress,
+      address: '',
       price: randomIntegerMinToMax(variantsOfPriceMin, variantsOfPriceMax),
       type: chooseRandomArrElement(variantsOfType),
       rooms: randomIntegerMinToMax(variantOfRoomsMin, variantOfRoomsMax),
       guests: randomIntegerMinToMax(variantsOfGuestsMin, variantsOfGuestsMax),
-      checkin: chooseRandomArrElement(variantsOfCheckin),
-      checkout: chooseRandomArrElement(variantsOfCheckout),
-      features: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
+      checkin: chooseRandomArrElement(variantsOfCheckinCheckout),
+      checkout: chooseRandomArrElement(variantsOfCheckinCheckout),
+      features: generateFeatures(variantsOfFeature),
       description: '',
       photos: []
     },
@@ -64,6 +70,7 @@ for (var i = 0; i < adsQuantity; i++) {
       y: randomIntegerMinToMax(variantsOfLocationYMin, variantsOfLocationYMax)
     }
   };
+  ads[i].offer.address = ads[i].location.x + ', ' + ads[i].location.y;
 }
 
 
@@ -73,7 +80,7 @@ for (var i = 0; i < adsQuantity; i++) {
 var createMapMarkerElement = function (arr, offsetX, offsetY) {
   var newElement = document.createElement('div');
   newElement.className = 'pin';
-  newElement.style.left = (arr.location.x + offsetX) + 'px';
+  newElement.style.left = (arr.location.x - offsetX) + 'px';
   newElement.style.top = (arr.location.y - offsetY) + 'px';
   newElement.innerHTML = '<img src="' + arr.author.avatar + '" class="rounded" width="40" height="40">';
   return newElement;
@@ -141,8 +148,8 @@ var dialogPanelFragment = document.createDocumentFragment();
 dialogPanelFragment.appendChild(createDialogPanelFragment(ads[0]));
 
 // Заменяем диалог на фрагмент
-var DialogPanel = document.querySelector('.dialog__panel');
-DialogPanel.parentNode.replaceChild(dialogPanelFragment, DialogPanel);
+var dialogPanel = document.querySelector('.dialog__panel');
+dialogPanel.parentNode.replaceChild(dialogPanelFragment, dialogPanel);
 
 // Меняе SRC....
 document.querySelector('.dialog__title').getElementsByTagName('img')[0].src = ads[0].author.avatar;

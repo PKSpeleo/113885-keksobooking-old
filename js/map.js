@@ -154,4 +154,4 @@ dialogPanel.parentNode.replaceChild(dialogPanelFragment, dialogPanel);
 // Меняе SRC....
 document.querySelector('.dialog__title').getElementsByTagName('img')[0].src = ads[0].author.avatar;
 
-// Поехали 1 2 4 5 6 7
+// Поехали 1 2 4 5 6 7 8
